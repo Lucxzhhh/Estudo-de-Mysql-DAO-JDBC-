@@ -17,5 +17,8 @@ Facilitar a troca de fornecedores de banco de dados sem grandes impactos na lóg
 
 - Melhorar a testabilidade, pois permite substituir DAOs reais por implementações simuladas (mock) durante os testes.
 
-## Diferença entre as camadas
+## Arquitetura das camadas 
+É uma forma de organizar o codifo separando responsavilidades. CAda camada tem um função especifica e não preisa saber como as outras funcionam por dentro.
 
+  Model
+- Contém as entidades do sistemas (Objectos que representam dados)
