@@ -22,3 +22,30 @@ Facilitar a troca de fornecedores de banco de dados sem grandes impactos na lóg
 
   Model
 - Contém as entidades do sistemas (Objectos que representam dados)
+- Exemplos:  classe CLIENTE, PRODUTO, PEDIDO.
+- São classes simples com atribustos, getters (métodos de acesso) e setters(médotos de modificação).
+- Funciona como um container de dados, sem lógica de negócio.
+  
+dao
+- contém as interfaces (contratos).
+- Define os métodos qye existe, mas não como eles funcionam.
+- A interface define os métodos CRUD () e mantém o código modular, permitindo trocar impremnteções sem mudar a lógica de negócio.
+- Exemplo: ClienteDao com métodos inserir(), buscarPorID(), listarTodos(), atualizar(), deletar()
+
+dao.impl
+- Contém as implementações das interfaces.
+- É aqui que fica o SQL de verdade, o JDBC, o PreparedStatement.
+- É onde ficam as imprementações concretas dis DAOs usando JDBC para interagir com o banco MySQL.
+- Exemplo: ClienteDaoJDBC que implementa CLienteDao.
+
+  db
+- contém a infrestrutura de conexão.
+- Inclui a classe utilitária de conexão com o banco, a exceção customuzada DbExcption, e a DaoFactory para instalar os DAOs.
+
+  app
+- contém o ponto de entrada do sistema.
+- É o main.java com o menu e a orquestração das ações do usuário.
+- Chamada os DAos através das interfaces, sem saber nada do SQL.
+
+Por que separar assim?
+Com esse tipo de separação permite que as duas partes evoluam de forma independente, se a lógica de negócio mudar, ela continua dependendo da interface DAO. Se a lógica de persistÊncia mudar, os clientes DAO não vão ser afetados.
