@@ -9,7 +9,7 @@ Em um projeto organizado em DAO, a classe DAO é a resposável por realizar as o
 ## Quais problemas o DAO resolve ?
 O padrão DAO surgiu na programação orientada a objetos como uma forma de solução para reduzir o acoplamento entre camda de negocio e a camda de persistencia. 
 
-A introdução do DAO resolveu esse problemas :
+#### A introdução do DAO resolveu esse problemas :
 - Criar uma camada intermediária entre o banco de dados e a lógica de negócio;
   
 - Permitir a reutilização de código para operações comuns no banco de dados;
@@ -20,29 +20,29 @@ Facilitar a troca de fornecedores de banco de dados sem grandes impactos na lóg
 ## Arquitetura das camadas 
 É uma forma de organizar o codifo separando responsavilidades. CAda camada tem um função especifica e não preisa saber como as outras funcionam por dentro.
 
-  Model
+  ### Model
 - Contém as entidades do sistemas (Objectos que representam dados)
 - Exemplos:  classe CLIENTE, PRODUTO, PEDIDO.
 - São classes simples com atribustos, getters (métodos de acesso) e setters(médotos de modificação).
 - Funciona como um container de dados, sem lógica de negócio.
   
-  dao
+  ### dao
 - contém as interfaces (contratos).
 - Define os métodos qye existe, mas não como eles funcionam.
 - A interface define os métodos CRUD (Create, Read, Update, Delete) e mantém o código modular, permitindo trocar impremnteções sem mudar a lógica de negócio.
 - Exemplo: ClienteDao com métodos inserir(), buscarPorID(), listarTodos(), atualizar(), deletar()
 
-  dao.impl
+  ### dao.impl
 - Contém as implementações das interfaces.
 - É aqui que fica o SQL de verdade, o JDBC, o PreparedStatement.
 - É onde ficam as imprementações concretas dis DAOs usando JDBC para interagir com o banco MySQL.
 - Exemplo: ClienteDaoJDBC que implementa CLienteDao.
 
-  db
+  ### db
 - contém a infrestrutura de conexão.
 - Inclui a classe utilitária de conexão com o banco, a exceção customuzada DbExcption, e a DaoFactory para instalar os DAOs.
 
-  app
+  ### app
 - contém o ponto de entrada do sistema.
 - É o main.java com o menu e a orquestração das ações do usuário.
 - Chamada os DAos através das interfaces, sem saber nada do SQL.
@@ -53,7 +53,14 @@ Com esse tipo de separação permite que as duas partes evoluam de forma indepen
 # JDBC como Funciona (a conexão java com banco de dados).
 JDBC é semelhante ao ODBC,e no principio utilizava o ODBC para conectar-se com o banco de dados. A partir de um codigo nativo as aplicações de java podiam usar qualquer banco de dados que tivesse um driver ODBC dísponivel. Desta forma ajudou muito a popularizar o JDBC uma vez que existe ym driverOBDC para praticamente qualquer banco de dados de mercado.
 
-Assim
+Assim como ODBC, JDBC também funciona através de drivers que são responsáveis pela conexão com o banco e execução das intruções SQL. Esse drivers foran divididos em quatro tipos.
+
+## JDBC 1
+Como o proprimio 'nome' fala, foi o primeiro a ser criado, ele não faz conexão direto com o banco de dados mais sim com o ODBC. Hoje em dia ele não é muito utilizado por ser escrito por liguagem nativa, sacrifica a portabilidade e exige configurações extra no cliente. Ele é composto por uma bilioteca de código nativo (não é necessario acessá-la diretamente), e pelas classes do pacote sun. jdbc. odbc. Caso tenha outras opções não utilize esse tipo driver.
+
+## JDBC 2
+
+
 
 
 
@@ -121,6 +128,8 @@ Tipos de dados MySQL (INT, VARCHAR, DECIMAL, DATETIME) — quando usar cada um
 Transações — o que é uma transação e por que usar
 
 setAutoCommit, commit, rollback — como controlar transações no JDBC
+
+fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1.
 
 db.properties — como configurar a conexão por arquivo externo
 
