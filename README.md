@@ -69,7 +69,7 @@ DriberManager é uma classe que totalmente implementada onde ela conecta um apli
 ## Utilizando a classe DriverManager
 A conexão com o seu SGBD usando o _DriverManager_ classe envolve a chamada do método _DriverManager.getConeection._ O seguinte método JDBCTutorialUtilities.getConnection, estabelece uma conexão com o banco de dados:
 
-`asda
+````
 public Connection getConnection() throws SQLException {
 
     Conexão conn = nula;
@@ -93,7 +93,7 @@ public Connection getConnection() throws SQLException {
     System.out.println("Conectado ao banco de dados");
     retornar conexão;
 }
-`
+````
 
 
 
