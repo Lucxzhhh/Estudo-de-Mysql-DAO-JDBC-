@@ -95,7 +95,19 @@ public Connection getConnection() throws SQLException {
 }
 ````
 
+Utilizando esse método  _DriverManager.getConeection_ ele estabelece uma conexão com o banco de dados. Ele precisa da url do banco de dados, varia dependendo do seu SGBD. Seguem os exemplo abaixo :
+
+#### Java DB :
+onde é o nome do banco de dados ao qual se conectar e instrui o SGBD a criar o banco de dados _jdbc:derby:testdb;create=truetestdbcreate=true_
+
+##### Observações 
+- Normalmente, a url do banco de dados, se utiliza o nome especifico do banco de dados existente ao qual você deseja conctar. Por exemplo, URL jdbc:mysql://localhost:3306/mysql onde ela representa o URL do banco de dados MySQL chamado mysql. Esse exemplo usam a URL que não especifica um banco de dados especifico porque os exemplos criam um novo banco de dados.
+
+- Em versoões anteriores do JDBC para conseguir se conectar, era necessario se inicializar o driver JDBC que precisa ser chamadi o método 'initialize' _Class.forName_, e esse método exige um objeto do tipo 'Connection' _java.sql.Driver_
+
 
 
 fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1. 
+
+fontes DriverManager e getConnection : https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html.
 
