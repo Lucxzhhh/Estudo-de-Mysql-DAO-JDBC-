@@ -55,86 +55,28 @@ JDBC é semelhante ao ODBC,e no principio utilizava o ODBC para conectar-se com 
 
 Assim como ODBC, JDBC também funciona através de drivers que são responsáveis pela conexão com o banco e execução das intruções SQL. Esse drivers foran divididos em quatro tipos.
 
-## JDBC 1
-Como o proprimio 'nome' fala, foi o primeiro a ser criado, ele não faz conexão direto com o banco de dados mais sim com o ODBC. Hoje em dia ele não é muito utilizado por ser escrito por liguagem nativa, sacrifica a portabilidade e exige configurações extra no cliente. Ele é composto por uma bilioteca de código nativo (não é necessario acessá-la diretamente), e pelas classes do pacote sun. jdbc. odbc. Caso tenha outras opções não utilize esse tipo driver.
 
-## JDBC 2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  ---------------------
+       Aplicação
+  ---------------------
+            |
+            |
+            |
+            |
+  ---------------------
+       API JDBC
+  ---------------------
+            |
+            |
+            |
+            |
+  -----------------------------------
+       Driver 1 (JDBC/ODBC Bridge)
+  -----------------------------------
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Padrão DAO — o que é e qual problema resolve
-
-Arquitetura em camadas — o que vai em cada pacote (model, dao, dao.impl, db, app)
-
-JDBC — como funciona a conexão Java com banco de dados
-
-DriverManager — como abrir uma conexão com getConnection()
-
-Statement vs PreparedStatement — diferença e quando usar cada um
-
-executeUpdate() vs executeQuery() — qual usar pra cada tipo de SQL
-
-ResultSet — como ler os dados retornados do banco
-
-SQL Injection — o que é e como acontece
-
-PreparedStatement como proteção — como ele previne SQL Injection
-
-try-with-resources — como fechar conexões automaticamente
-
-Vazamento de conexão — o que é e por que é um problema
-
-SQLException — o que é essa exceção
-
-DbException (exceção customizada) — por que criar uma classe própria de erro
-
-Chaves no banco (PK, FK, NOT NULL, UNIQUE) — conceito de modelagem
-
-Tipos de dados MySQL (INT, VARCHAR, DECIMAL, DATETIME) — quando usar cada um
-
-Índices no banco — o que são e quando importam
-
-Transações — o que é uma transação e por que usar
-
-setAutoCommit, commit, rollback — como controlar transações no JDBC
 
 fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1.
 
-db.properties — como configurar a conexão por arquivo externo
-
-ConnectionFactory — como criar uma classe que gerencia a conexão
-
-MySQL Connector/J — o driver que conecta Java ao MySQL
-
-URL de conexão JDBC — como montar a string de conexão corretamente
