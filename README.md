@@ -54,25 +54,8 @@ Com esse tipo de separação permite que as duas partes evoluam de forma indepen
 JDBC é semelhante ao ODBC,e no principio utilizava o ODBC para conectar-se com o banco de dados. A partir de um codigo nativo as aplicações de java podiam usar qualquer banco de dados que tivesse um driver ODBC dísponivel. Desta forma ajudou muito a popularizar o JDBC uma vez que existe ym driverOBDC para praticamente qualquer banco de dados de mercado.
 
 Assim como ODBC, JDBC também funciona através de drivers que são responsáveis pela conexão com o banco e execução das intruções SQL. Esse drivers foran divididos em quatro tipos.
+<img width="642" height="740" alt="image" src="https://github.com/user-attachments/assets/c0900ef1-8ee6-4dff-b199-718b7b898e15" />
 
-
-  ---------------------
-       Aplicação
-  ---------------------
-            |
-            |
-            |
-            |
-  ---------------------
-       API JDBC
-  ---------------------
-            |
-            |
-            |
-            |
-  -----------------------------------
-       Driver 1 (JDBC/ODBC Bridge)
-  -----------------------------------
 
 
 
