@@ -63,6 +63,37 @@ Após fazer a download do driver, basta incluir ao **CLASSPATH**. A partir desse
 
 **Nota :** Na maoria dos IDE's ignoram a variavel ambiente **CLASSPATH** (utilizam uma forma própria de gerenciar as classes usadas pelo projeto), caso isso ocorra você deve adicionar o driver no projeto.
 
+# DriverManager e getConnection
+DriberManager é uma classe que totalmente implementada onde ela conecta um aplicativo a fonte de dados, usando a url especifica de banco de dados. No momento em que essa classe tenta fazer o primeiro contado ela carrega automaticamente quaisquer drivers JDBC 4.0 encontrados no classpath. Lembrando que seu aplicativo tem que carregar manualmente quaisquer drivers JDBC anteriores à versão 4.0
+
+## Utilizando a classe DriverManager
+A conexão com o seu SGBD usando o _DriverManager_ classe envolve a chamada do método _DriverManager.getConeection._ O seguinte método JDBCTutorialUtilities.getConnection, estabelece uma conexão com o banco de dados:
+
+`public Connection getConnection() throws SQLException {
+
+    Conexão conn = nula;
+    Propriedades connectionProps = nova Propriedades();
+    connectionProps.put("user", this.userName);
+    connectionProps.put("senha", this.senha);
+
+    se (this.dbms.equals("mysql")) {
+        conexão = DriverManager.getConnection(
+                   "jdbc:" + this.dbms + "://" +
+                   this.serverName +
+                   ":" + this.portNumber + "/",
+                   connectionProps);
+    } else if (this.dbms.equals("derby")) {
+        conexão = DriverManager.getConnection(
+                   "jdbc:" + this.dbms + ":" +
+                   this.dbName +
+                   ";criar=verdadeiro",
+                   connectionProps);
+    }
+    System.out.println("Conectado ao banco de dados");
+    retornar conexão;
+}`
+
+
 
 fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1. 
 
