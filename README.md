@@ -54,12 +54,15 @@ Com esse tipo de separação permite que as duas partes evoluam de forma indepen
 JDBC é semelhante ao ODBC,e no principio utilizava o ODBC para conectar-se com o banco de dados. A partir de um codigo nativo as aplicações de java podiam usar qualquer banco de dados que tivesse um driver ODBC dísponivel. Desta forma ajudou muito a popularizar o JDBC uma vez que existe ym driverOBDC para praticamente qualquer banco de dados de mercado.
 
 Assim como ODBC, JDBC também funciona através de drivers que são responsáveis pela conexão com o banco e execução das intruções SQL. Esse drivers foran divididos em quatro tipos.
+
 <img width="642" height="740" alt="image" src="https://github.com/user-attachments/assets/c0900ef1-8ee6-4dff-b199-718b7b898e15" />
 
+Esses drivers são implementações das interfaces do pacote java.sql. Geralmente eles estão disponibilizados em arquivos JAR (java ARchive) pelos frabricantes do banco de dados ou terceiros. Você pode encontrar esses drivers JDBC em m www.oracle.com, www.dev.mysql.com, www.microsoft.com, www.ibm.com. Ou você pode consultar a base de dados de drivers certificados da Sun em http://developers.sun.com/product/jdbc/drivers.
+
+Após fazer a download do driver, basta incluir ao **CLASSPATH**. A partir desse momento está tudo pronto para você acessar o banco de dados via java.
+
+**Nota :** Na maoria dos IDE's ignoram a variavel ambiente **CLASSPATH** (utilizam uma forma própria de gerenciar as classes usadas pelo projeto), caso isso ocorra você deve adicionar o driver no projeto.
 
 
-
-
-
-fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1.
+fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1. 
 
