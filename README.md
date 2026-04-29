@@ -72,26 +72,20 @@ A conexão com o seu SGBD usando o _DriverManager_ classe envolve a chamada do m
 ````
 public Connection getConnection() throws SQLException {
 
-    Conexão conn = nula;
-    Propriedades connectionProps = nova Propriedades();
+    Connection conn = null;
+    Properties connectionProps = new Properties();
     connectionProps.put("user", this.userName);
-    connectionProps.put("senha", this.senha);
+    connectionProps.put("password", this.password);
 
-    se (this.dbms.equals("mysql")) {
-        conexão = DriverManager.getConnection(
+    if (this.dbms.equals("mysql")) {
+        conn = DriverManager.getConnection(
                    "jdbc:" + this.dbms + "://" +
                    this.serverName +
                    ":" + this.portNumber + "/",
                    connectionProps);
-    } else if (this.dbms.equals("derby")) {
-        conexão = DriverManager.getConnection(
-                   "jdbc:" + this.dbms + ":" +
-                   this.dbName +
-                   ";criar=verdadeiro",
-                   connectionProps);
     }
     System.out.println("Conectado ao banco de dados");
-    retornar conexão;
+    return conn;
 }
 ````
 
@@ -105,9 +99,71 @@ onde é o nome do banco de dados ao qual se conectar e instrui o SGBD a criar o 
 
 - Em versoões anteriores do JDBC para conseguir se conectar, era necessario se inicializar o driver JDBC que precisa ser chamadi o método 'initialize' _Class.forName_, e esse método exige um objeto do tipo 'Connection' _java.sql.Driver_
 
+## Statement vs PreparedStatement 
+Quando já à uma conexão com o banco de dados. A interfaces JDBC Statement, PreparedStatement e CallableStatement, eles permitem enviar os comandos de SQL ou PL/SQL, e receber dados do seu banco de dados. Eles também difine métodos que ajuda a conectar diferenças entre tipos de dados Java e SQL. 
 
+#### O que é Statement
+É uma interface simples que permite executar comandos SQL "fixo", sem parâmetros dinamicos, como um _SELECT, INSERT UPDATE ou DELETE simples. Exemplo :
+
+``
+PreparedStatement ps = conn.prepareStatement(
+    "INSERT INTO usuarios (nome, idade) VALUES (?, ?)"
+);
+ps.setString(1, "LH");
+ps.setInt(2, 20);
+ps.executeUpdate();
+``
+#### O que é PreparedStatement
+O PreparedStatement é uma subinterface de _Statement_ que trabalha com **SQL parametrizado** (usando ?).Ele "prepara" uma consulta no seu banco, uma vez que o seu banco permite reutiliza-lo varias vezes com diferentes valores, isso acaba deixando mais rápido e seguro contra o SQL injection. Exemplo :
+``
+PreparedStatement ps = conn.prepareStatement(
+    "INSERT INTO usuarios (nome, idade) VALUES (?, ?)"
+);
+ps.setString(1, "LH");
+ps.setInt(2, 20);
+ps.executeUpdate();
+``
+
+#### O que é CallableStatement
+O _CallableStatement_ estende o _PreparedStatement_, ele é utilizado para chamar precedimentos armazenados (stored procedure) e funções do próprio banco de dados. Ele lida com parâmedos de entrada (IN), saída (OUT) e entrada/saída (INOUT). Exemplo:
+
+``
+CallableStatement cs = conn.prepareCall("{call calcular_total(?, ?)}");
+cs.setInt(1, 100);
+cs.setInt(2, 200);
+cs.registerOutParameter(3, Types.INTEGER); // parâmetro de saída
+cs.execute();
+int resultado = cs.getInt(3);
+``
+
+### Objetos da Afirmação (criando o objeto de Instrução)
+Para usar o obejto Statement para executar uma instrução SQL, é necessesario  criar um método _createStatement( )_ do objeto Connection. Exemplo abaixo :
+
+``
+Statement stmt = null;
+try {
+   stmt = conn.createStatement( );
+   . . .
+}
+catch (SQLException e) {
+   . . .
+}
+finally {
+   . . .
+}
+``
+
+
+# Fontes utilizadas
 
 fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1. 
 
-fontes DriverManager e getConnection : https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html.
+fontes DriverManager e getConnection :
+- https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html.
+- https://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-connect-drivermanager.html.
+
+Fontes Statement vs PreparedStatement  : 
+- https://www.tutorialspoint.com/jdbc/jdbc-statements.htm
+- https://www.guj.com.br/t/diferenca-entre-preparecall-e-preparestatement/284216/
+- https://www.ramon.pro.br/statement-vs-preparedstatement-quais-as-diferencas/
 
