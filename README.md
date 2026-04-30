@@ -47,10 +47,21 @@ Facilitar a troca de fornecedores de banco de dados sem grandes impactos na lóg
 - É o main.java com o menu e a orquestração das ações do usuário.
 - Chamada os DAos através das interfaces, sem saber nada do SQL.
 
-## Por que separar assim?
+#### Por que separar assim?
 Com esse tipo de separação permite que as duas partes evoluam de forma independente, se a lógica de negócio mudar, ela continua dependendo da interface DAO. Se a lógica de persistÊncia mudar, os clientes DAO não vão ser afetados.
 
-# JDBC como Funciona (a conexão java com banco de dados).
+## Conceito Básico de banco
+Antes de trabalhar com JDBC, é importante entender alguns conceitos basicos de banco de dados
+- INT : numeros inteiros (Ex: idade, id, quantidade).
+- VARCHAR : textos (Ex: nome, email).
+- DECIMAL : numeros com casas decimais (Ex : preço).
+- DETAMINE : data e hora.
+- PK (Primary key) : identifican unicamente cada registro na tabela
+- FK (Foreign Key) : cria relacionamento entre tabelas
+- NOT NULL : campo não pode ficar vazio
+- UNIQUE : o valor não pode se repetir na tabela
+
+## JDBC como Funciona (a conexão java com banco de dados).
 JDBC é semelhante ao ODBC,e no principio utilizava o ODBC para conectar-se com o banco de dados. A partir de um codigo nativo as aplicações de java podiam usar qualquer banco de dados que tivesse um driver ODBC dísponivel. Desta forma ajudou muito a popularizar o JDBC uma vez que existe ym driverOBDC para praticamente qualquer banco de dados de mercado.
 
 Assim como ODBC, JDBC também funciona através de drivers que são responsáveis pela conexão com o banco e execução das intruções SQL. Esse drivers foran divididos em quatro tipos.
@@ -99,6 +110,30 @@ onde é o nome do banco de dados ao qual se conectar e instrui o SGBD a criar o 
 
 - Em versoões anteriores do JDBC para conseguir se conectar, era necessario se inicializar o driver JDBC que precisa ser chamadi o método 'initialize' _Class.forName_, e esse método exige um objeto do tipo 'Connection' _java.sql.Driver_
 
+## Configuração de conexão (db.properties)
+O arquivo db.properties serve para guardar as informações de conexão com o banco de dados separados do codigo Java. Isso evita deixar dados sensiveis como senha diretamente no codigo, facilitando manutenção e organização. Exemplo: 
+
+``db.url=jdbc:mysql://localhost:3306/teste
+db.user=root
+db.password=``
+
+## ConnectionFactory
+a ConnectionFactory é uma classe resposavel por centralizar a criação de conexão com o banco. Ao invés de abrir conexão em varios lugares do codigo, vocÊ tem um unico ponto que fez isso, lendo as informações do db.properties. Exemplo :
+
+``public class ConnectionFactory {
+    public static Connection getConnection() {
+        try {
+            return DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/teste",
+                "root",
+                ""
+            );
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
+}``
+
 ## Statement vs PreparedStatement 
 Quando já à uma conexão com o banco de dados. A interfaces JDBC Statement, PreparedStatement e CallableStatement, eles permitem enviar os comandos de SQL ou PL/SQL, e receber dados do seu banco de dados. Eles também difine métodos que ajuda a conectar diferenças entre tipos de dados Java e SQL. 
 
@@ -126,24 +161,6 @@ PreparedStatement ps = conn.prepareStatement(
 ps.setString(1, "pedro");
 ps.setInt(2, 20);
 ps.executeUpdate();
-``
-
-
-### Objetos da Afirmação (criando o objeto de Instrução)
-Para usar o obejto Statement para executar uma instrução SQL, é necessesario  criar um método _createStatement( )_ do objeto Connection. Exemplo abaixo :
-
-``
-Statement stmt = null;
-try {
-   stmt = conn.createStatement( );
-   . . .
-}
-catch (SQLException e) {
-   . . .
-}
-finally {
-   . . .
-}
 ``
 
 ##  executeUpdate() vs executeQuery()
@@ -233,6 +250,8 @@ public class Select {
 #### Como PreparedStatement previne
 Para prevenir a SQL Injection você precisa tomar algumas precauções, como execultar a consulta em instruções preparadas ("quando utilizamos elas não concatenamos a entrada do usuario na instruções SQL, que está executnado, porque isso forçará o desenvolvedor a primeiro definir todas as consultas SQL e depois passar cada parametro ou seja a entrada do usuarip, para a consulta depois"). Resumindo nada dentro da entrada do usuario é tratado como instrução SQL.
 
+PreparedStatement é compilado uma unica e fica salvo no cache. Após os dados dos usuario chegam, os placeholders  são substituidos sem recomplicar a query. Por isso qualquer SQL que o usuario digitar é tradado como um dado puro e não como instruções SQL.
+
 ````
 package com.minghong;
 
@@ -295,15 +314,177 @@ public class Login {
 - Declare a variavel SQL com como placeholder **?**.
 - Crie o PreparedStatement com conn.prepareStatement(query).
 - Use os métodos setter para preencher os placeholders
-- Executte com 
+- Execute com executeQuery().
+- Processe o resultado normalmente.
+- Feche o PreparedStatement e o ResultSet.
+
+#### Benefícios extras do PreparedStatement
+Caso você precise executar uma consulta 10 ou 100 vezes, ele não vai passar por todas as fases novamente, ele pode rodar rapidamente pois ele simplesmente substui os marcadores de posição na consulta précompilada. Esse recurso oferece melhor desempenho. 
+
+## try-with-resources
+Ele é um recurso do java (desde java 7), ele serve para fechar automaticamente recurso apos o uso, e evitar ter que usar _finally_ manualemnte. Seus recursos comuns JDBC _Connection_, _PreparedStatement_, _ResultSet_.
+
+#### Como funciona  o fechamento automático
+Ele funciona da seguinte forma qualquer objeto que implementa **AutoCloseable** pode ser usado. Quando o bloco _try_ termina, o java chama automaticamente _.close()_, **Ordem de fechamento**
+- ResulSet
+- Statement / PreparedStatement
+- Connection
+
+#### Como usar no JDBC
+
+````
+try (Connection conn = DriverManager.getConnection(url, user, pass);
+     PreparedStatement ps = conn.prepareStatement("SELECT * FROM usuarios");
+     ResultSet rs = ps.executeQuery()) {
+
+    while (rs.next()) {
+        System.out.println(rs.getString("nome"));
+    }
+
+} catch (SQLException e) {
+    e.printStackTrace();
+}
+````
+**Você não pode fazer :**
+
+``
+rs.close();
+ps.close();
+conn.close();``
+
+Caso não fechar averá vazamento de conexão, as conexões do banco ficará aberta, o banco tem seus limites de conexões simultâneas, e pode aconter :
+- Erro "**Too many connections**"
+- Sistema parar de responder
+- Queda de performance
+- Isso é chamaddo de **Connection leak (Vazamento de conexão)**
+
+## SQLException
+O SQLException é uma exceção do java usada para **erros relacionados ao banco de dados**. Quando ela é lançada :
+- Erro de conexão com o banco.
+- SQL invalído.
+- Tabela não existe.
+- tipo de dados errado.
+- falha na execução de query.
+
+#### Informações que ele carrega
+
+``
+catch (SQLException e) {
+    System.out.println(e.getMessage());    // mensagem do erro
+    System.out.println(e.getSQLState());   // código padrão SQL
+    System.out.println(e.getErrorCode());  // código específico do banco
+}
+``
+
+- getMessage(): descrição do erro.
+- getSQLState(): padrão internacional.
+- getErrorCode(): codigo especifico do MySQL.
+
+  #### Como tratar (Try-catch)
+
+  ``
+  try {
+    Connection conn = DriverManager.getConnection(url, user, pass);
+} catch (SQLException e) {
+    System.out.println("Erro ao conectar: " + e.getMessage());
+}
+  ``
+
+#### DbException (exceção customizada)
+O DbException é ima classe criada por você ela serve para padronizar erros do banco de dados no seu projeto, além de substituir o uso direto de SQLException (pois, ele deixa o codigo poluido, dificil padronizar mensagens e fica muito dependente do JDBC, a solução é criar DbException), ela geralmente estende _RuntimeException_, o que facilita o uso porque não precisa de _throws_.
+
+#### O que é RuntimeException
+O RuntimeException é uma **exceção não obrigatoria (unchechked)**, e você não precisa usar _throws_.
+
+``public class DbException extends RuntimeException {
+    public DbException(String msg) {
+        super(msg);
+    }
+}``
+
+#### Exemplo Codigo SEM DbException
+``
+public void inserir() throws SQLException {
+    PreparedStatement ps = conn.prepareStatement("...");
+}
+``
+
+#### Exemplo Codigo COM DbException
+``
+try {
+    PreparedStatement ps = conn.prepareStatement("...");
+} catch (SQLException e) {
+    throw new DbException(e.getMessage());
+}
+``
+
+## Transações
+Uma transação pe um conjunto de operações que devem ser executadas juntas. Se uma falhar, todas as outras são desfeitas. Isso garante que o banco nunca fique com dados pela metade.
+
+Um exemplo pratico é inserir um pedido e os intens desse pedido ao mesmo tempo se a inserção dos intes falhar, o pedido também precisa ser desfeito
+
+por padrão o JDBC confrima cada operação automaticamente. Para controlar isso manualmente você usa: 
+- setAutoCommit(false) : desativa confirmação automatica
+- commit() : confirma todas as operações
+- rollback() desfaz tudo caso ocorra erro
+
+#### Exemplo :
+``try {
+    conn.setAutoCommit(false);
+    // operações aqui
+    conn.commit();
+} catch (SQLException e) {
+    conn.rollback();
+    throw new DbException(e.getMessage());
+}``
+
+## Mapa conceitual
+projeto-dao-base/
+├─ pom.xml
+├─ README.md
+└─ src/
+   ├─ main/
+   │  ├─ java/
+   │  │  └─ br/escola/dao_base/
+   │  │     ├─ app/
+   │  │     │  └─ Main.java
+   │  │     ├─ model/
+   │  │     │  └─ (entidades do tema entram depois)
+   │  │     ├─ dao/
+   │  │     │  └─ (interfaces entram depois)
+   │  │     ├─ dao/impl/
+   │  │     │  └─ (implementações JDBC entram depois)
+   │  │     └─ db/
+   │  │        ├─ ConnectionFactory.java
+   │  │        └─ DbException.java
+   │  └─ resources/
+   │     ├─ db.properties
+   │     └─ sql/
+   │        ├─ schema.sql
+   │        └─ seed.sql
+   └─ test/
+      └─ java/ (opcional)
 
 # Fontes utilizadas
 
-fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1. 
+Fontes DAO:
+- https://www.dio.me/articles/o-que-e-dao-ba9c73921265.
 
-fontes DriverManager e getConnection :
+Fontes Conseitos Basicos: 
+
+Fontes JDBC: https://www.devmedia.com.br/jdbc-tutorial/6638#1. 
+
+Fontes DriverManager e getConnection :
 - https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html.
 - https://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-connect-drivermanager.html.
+
+Fontes Configuração de conexão (db.properties):
+- https://dev.mysql.com/doc/refman/8.0/en/data-types.html
+- https://dev.mysql.com/doc/refman/8.0/en/constraint-primary-key.html
+
+Fontes ConnectionFactory :
+- https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html
+- https://www.baeldung.com/java-jdbc-connection-factory
 
 Fontes Statement vs PreparedStatement  : 
 - https://www.tutorialspoint.com/jdbc/jdbc-statements.htm
@@ -316,4 +497,29 @@ Fontes executeUpdate() vs executeQuery():
 
 Fontes ResultSet :
 - https://docs.oracle.com/javase/tutorial/jdbc/basics/retrieving.html
+
+Fontes SQL Injection e PreparedStatement como proteção:
+- https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
+- https://medium.com/swlh/preventing-sql-injection-attack-with-java-prepared-statement-259611281e4d
+- https://javabypatel.blogspot.com/2015/09/how-prepared-statement-in-java-prevents-sql-injection.html
+
+Fontes try-with-resources:
+- https://www.tutorialspoint.com/java/java_try_with_resources.htm
+
+Fontes SQLException:
+- https://docs.oracle.com/javase/tutorial/jdbc/basics/sqlexception.html
+- https://www.tutorialspoint.com/jdbc/jdbc-exceptions.htm
+
+Fontes DbException (Exceção Customizada):
+- https://www.tutorialspoint.com/jdbc/jdbc-exceptions.htm.
+- https://www.baeldung.com/java-new-custom-exception.
+
+Fontes Transações :
+- https://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
+- https://www.tutorialspoint.com/jdbc/jdbc-transactions.htm
+
+
+
+
+
 
