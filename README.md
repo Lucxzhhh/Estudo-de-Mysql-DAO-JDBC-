@@ -486,9 +486,9 @@ projeto-dao-base/
   
 <div align="center">
 
-## 👨‍💻 Equipe de Desenvolvimento
+## 👨‍💻 Desenvolvedor 
 
-<i>Projeto desenvolvido por estudantes do 2º ano de Desenvolvimento de Sistemas - ETEC</i>
+<i>Projeto desenvolvido por estudante do 2º ano de Desenvolvimento de Sistemas - ETEC</i>
 
 </div>
 
