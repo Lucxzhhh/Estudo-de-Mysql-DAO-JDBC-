@@ -483,3 +483,24 @@ projeto-dao-base/
 **Fontes Transações:**
 - https://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
 - https://www.tutorialspoint.com/jdbc/jdbc-transactions.htm
+  
+## 👨‍💻 Desenvolvedor
+
+<i>Projeto desenvolvido por estudantes do 2º ano de Desenvolvimento de Sistemas - ETEC</i>
+
+</div>
+<br>
+
+<table align="center">
+  <tr>
+    <!-- Lucas -->
+    <td align="center">
+      <a href="https://github.com/Lucxzhhh">
+        <img src="https://github.com/user-attachments/assets/b0f08778-8ee4-4370-a426-2c43b95f3b1a" width="140"><br>
+        <b>Lucxzhhh</b>
+      </a>
+    </td>
+  </tr>
+</table>
+
+<br>
