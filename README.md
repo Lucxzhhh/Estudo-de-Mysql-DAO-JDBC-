@@ -484,9 +484,13 @@ projeto-dao-base/
 - https://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
 - https://www.tutorialspoint.com/jdbc/jdbc-transactions.htm
   
-## 👨‍💻 Desenvolvedor
+<div align="center">
+
+## 👨‍💻 Equipe de Desenvolvimento
 
 <i>Projeto desenvolvido por estudantes do 2º ano de Desenvolvimento de Sistemas - ETEC</i>
+
+</div>
 
 </div>
 <br>
